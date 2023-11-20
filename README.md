@@ -1,9 +1,8 @@
-# fb_bili
+## bili
 
 [仅供flutter学习 bili]
 
-> 已支持Flutter 3.x，Dart3.x
-> flutter sdk 3.16.0
+> 已支持Flutter 3.x，Dart3.x , Flutter Sdk 3.16.0
 
 ## 如何运行
 
