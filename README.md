@@ -1,16 +1,14 @@
 # fb_bili
 
-flutter learn
+[仅供flutter学习 bili]
 
-## Getting Started
+> 已支持Flutter 3.x，Dart3.x
+> flutter sdk 3.16.0
 
-This project is a starting point for a Flutter application.
+## 如何运行
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. 搭建Flutter开发环境，可参考：https://docs.flutter.dev/get-started/install
+2. 用Android Studio打开项目
+3. 运行`flutter pub get`获取项目依赖
+4. 打开Android或iOS模拟器
+5. 通过Android Studio 运行按钮运行项目
