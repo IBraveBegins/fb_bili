@@ -1,3 +1,6 @@
+import 'package:fb_bili/http/core/dio_adapter.dart';
+import 'package:fb_bili/http/core/hi_error.dart';
+import 'package:fb_bili/http/core/hi_net_adapter.dart';
 import 'package:fb_bili/http/request/base_request.dart';
 
 class HiNet {
@@ -13,21 +16,44 @@ class HiNet {
   }
 
   Future fire(BaseRequest request) async {
-    var response = await send(request);
-    var result = response['data'];
+    HiNetResponse? response;
+    var error;
+    try {
+      response = await send(request);
+    } on HiNetError catch (e) {
+      error = e;
+      response = await e.data;
+      printLog(e.message);
+    } catch (e) {
+      //其他异常
+      error = e;
+      printLog(e);
+    }
+    if (response == null) {
+      printLog(error);
+    }
+
+    var result = response?.data;
     printLog(result);
-    return result;
+
+    var status = response?.statusCode;
+    switch (status) {
+      case 200:
+        return result;
+      case 401:
+        throw NeedLogin();
+      case 403:
+        throw NeedAuth(result.toString(), data: result);
+      default:
+        throw HiNetError(status ?? -1, result.toString(), data: result);
+    }
   }
 
   Future<dynamic> send<T>(BaseRequest request) async {
     printLog('url:${request.url()}');
-    printLog('method:${request.httpMethod()}');
-    request.addHeader("token", "123");
-    printLog('header:${request.header}');
-    return Future.value({
-      "code": 200,
-      "data": {"code": 0, "message": "success"}
-    });
+    //使用dio发送请求
+    HiNetAdapter adapter = DioAdapter();
+    return adapter.send(request);
   }
 
   void printLog(log) {
