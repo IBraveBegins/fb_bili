@@ -1,4 +1,7 @@
 import 'package:fb_bili/db/hi_cache.dart';
+import 'package:fb_bili/http/core/hi_error.dart';
+import 'package:fb_bili/http/core/hi_net.dart';
+import 'package:fb_bili/http/request/test_request.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -65,21 +68,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _incrementCounter() async {
-    // TestRequest request = TestRequest();
-    // request.add("aaaa", "111").add("bb", "33").add("requestPrams", "111");
-    // try {
-    //   var result = await HiNet.getInstance().fire(request);
-    //   print(result);
-    // } on NeedAuth catch (e) {
-    //   print(e);
-    // } on NeedLogin catch (e) {
-    //   print(e);
-    // } on HiNetError catch (e) {
-    //   print(e);
-    // }
-    HiCache.getInstance().setString("aaa", "value");
-    var value = HiCache.getInstance().get("aaa");
-    print('value:$value');
+    TestRequest request = TestRequest();
+    request.add("aaaa", "111").add("bb", "33").add("requestPrams", "111");
+    try {
+      var result = await HiNet.getInstance().fire(request);
+      print(result);
+    } on NeedAuth catch (e) {
+      print(e);
+    } on NeedLogin catch (e) {
+      print(e);
+    } on HiNetError catch (e) {
+      print(e);
+    }
+    // HiCache.getInstance().setString("aaa", "value");
+    // var value = HiCache.getInstance().get("aaa");
+    // print('value:$value');
   }
 
   @override
