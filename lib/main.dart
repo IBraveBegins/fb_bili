@@ -4,6 +4,8 @@ import 'package:fb_bili/http/core/hi_net.dart';
 import 'package:fb_bili/http/dao/login_dao.dart';
 import 'package:fb_bili/http/request/notice_request.dart';
 import 'package:fb_bili/http/request/test_request.dart';
+import 'package:fb_bili/page/registration_page.dart';
+import 'package:fb_bili/util/color.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -19,10 +21,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: RegistrationPage(
+        onJumpToLogin: () {},
+      ),
     );
   }
 }
