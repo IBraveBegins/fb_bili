@@ -81,17 +81,17 @@ class _LoginPageState extends State<LoginPage> {
       print(result);
       if (result['code'] == 0) {
         print('登录成功');
-        // showToast('登录成功');
+        showToast('登录成功');
       } else {
         print(result['msg']);
-        // showWarnToast(result['msg']);
+        showWarnToast(result['msg']);
       }
     } on NeedAuth catch (e) {
       print(e);
-      // showWarnToast(e.message);
+      showWarnToast(e.message);
     } on HiNetError catch (e) {
       print(e);
-      // showWarnToast(e.message);
+      showWarnToast(e.message);
     }
   }
 }

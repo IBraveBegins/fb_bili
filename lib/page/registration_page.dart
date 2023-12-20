@@ -1,5 +1,7 @@
 import 'package:fb_bili/util/string_util.dart';
+import 'package:fb_bili/util/toast.dart';
 import 'package:fb_bili/widget/appbar.dart';
+import 'package:fb_bili/widget/login_button.dart';
 import 'package:fb_bili/widget/login_effect.dart';
 import 'package:fb_bili/widget/login_input.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +11,7 @@ import '../http/dao/login_dao.dart';
 
 class RegistrationPage extends StatefulWidget {
   final VoidCallback? onJumpToLogin;
-  const RegistrationPage({super.key, this.onJumpToLogin});
+  const RegistrationPage(this.onJumpToLogin, {super.key});
 
   @override
   State<RegistrationPage> createState() => _RegistrationPageState();
@@ -90,7 +92,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
           ),
           Padding(
             padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
-            child: _loginButton(),
+            child: LoginButton(
+              '注册',
+              enable: loginEnable,
+              onPressed: checkParams,
+            ),
           )
         ],
       ),
@@ -113,19 +119,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
     });
   }
 
-  _loginButton() {
-    return InkWell(
-      onTap: () {
-        if (loginEnable) {
-          checkParams();
-        } else {
-          print('loginEnable is false');
-        }
-      },
-      child: Text('注册'),
-    );
-  }
-
   void send() async {
     try {
       var result =
@@ -133,16 +126,20 @@ class _RegistrationPageState extends State<RegistrationPage> {
       print(result);
       if (result['code'] == 0) {
         print('注册成功');
+        showToast('注册成功');
         if (widget.onJumpToLogin != null) {
           widget.onJumpToLogin!();
         }
       } else {
         print(result['msg']);
+        showWarnToast(result['msg']);
       }
     } on NeedAuth catch (e) {
       print(e);
+      showWarnToast(e.message);
     } on HiNetError catch (e) {
       print(e);
+      showWarnToast(e.message);
     }
   }
 

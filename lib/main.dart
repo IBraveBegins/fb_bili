@@ -19,14 +19,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    HiCache.preInit();
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      // home: RegistrationPage(),
-      home: LoginPage(),
+      home: RegistrationPage(() {}),
+      // home: LoginPage(),
     );
   }
 }
