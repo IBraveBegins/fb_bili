@@ -38,6 +38,7 @@ dependencies:
   dio: ^5.3.3
   shared_preferences: ^2.2.2
   http: ^1.1.0
+  fluttertoast: ^8.2.4
 
 dev_dependencies:
   flutter_test:

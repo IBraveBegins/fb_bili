@@ -4,6 +4,7 @@ import 'package:fb_bili/http/core/hi_net.dart';
 import 'package:fb_bili/http/dao/login_dao.dart';
 import 'package:fb_bili/http/request/notice_request.dart';
 import 'package:fb_bili/http/request/test_request.dart';
+import 'package:fb_bili/page/login_page.dart';
 import 'package:fb_bili/page/registration_page.dart';
 import 'package:fb_bili/util/color.dart';
 import 'package:flutter/material.dart';
@@ -24,9 +25,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      home: RegistrationPage(
-        onJumpToLogin: () {},
-      ),
+      // home: RegistrationPage(),
+      home: LoginPage(),
     );
   }
 }

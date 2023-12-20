@@ -16,7 +16,7 @@ class _LoginEffectState extends State<LoginEffect> {
       padding: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
           color: Colors.grey[100],
-          border: const Border(bottom: BorderSide(color: Colors.grey))),
+          border: const Border(bottom: BorderSide(color: Colors.white70))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
