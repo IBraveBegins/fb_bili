@@ -10,7 +10,10 @@ import '../http/dao/login_dao.dart';
 import '../util/string_util.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final VoidCallback? onJumpRegistration;
+  final VoidCallback? onSuccess;
+
+  LoginPage({super.key, this.onJumpRegistration, this.onSuccess});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -24,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar('密码登录', '注册', () {}),
+      appBar: appBar('密码登录', '注册', widget.onJumpRegistration!),
       body: ListView(
         children: [
           LoginEffect(protect: protect),
@@ -82,6 +85,9 @@ class _LoginPageState extends State<LoginPage> {
       if (result['code'] == 0) {
         print('登录成功');
         showToast('登录成功');
+        if (widget.onSuccess != null) {
+          widget.onSuccess!();
+        }
       } else {
         print(result['msg']);
         showWarnToast(result['msg']);

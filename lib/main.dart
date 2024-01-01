@@ -5,11 +5,13 @@ import 'package:fb_bili/http/dao/login_dao.dart';
 import 'package:fb_bili/http/request/notice_request.dart';
 import 'package:fb_bili/http/request/test_request.dart';
 import 'package:fb_bili/model/video_model.dart';
+import 'package:fb_bili/navigator/hi_navigator.dart';
 import 'package:fb_bili/page/home_page.dart';
 import 'package:fb_bili/page/login_page.dart';
 import 'package:fb_bili/page/registration_page.dart';
 import 'package:fb_bili/page/video_detail_page.dart';
 import 'package:fb_bili/util/color.dart';
+import 'package:fb_bili/util/toast.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -27,11 +29,26 @@ class _BillAppState extends State<BillApp> {
   BiliRouteDelegate _routeDelegate = BiliRouteDelegate();
   @override
   Widget build(BuildContext context) {
-    //定义route
-    var widget = Router(routerDelegate: _routeDelegate);
-    return MaterialApp(
-      home: widget,
-    );
+    return FutureBuilder<HiCache>(
+        //进行初始化
+        future: HiCache.preInit(),
+        builder: (BuildContext context, AsyncSnapshot<HiCache> snapshot) {
+          //定义route
+          var widget = snapshot.connectionState == ConnectionState.done
+              ? Router(routerDelegate: _routeDelegate)
+              : const Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+          return MaterialApp(
+            home: widget,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
+              useMaterial3: true,
+            ),
+          );
+        });
   }
 }
 
@@ -41,38 +58,91 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
 
   //为Navigator设置一个key，必要的时候可以通过navigatorKey.currentState来获取到NavigatorState对象
   BiliRouteDelegate() : navigatorKey = GlobalKey<NavigatorState>();
+  RouteStatus _routeStatus = RouteStatus.home;
   List<MaterialPage> pages = [];
   VideoModel? videoModel;
-  BiliRoutePath? path;
+
   @override
   Widget build(BuildContext context) {
-    //构建路由栈
-    pages = [
-      pagerWrap(HomePage(
+    var index = getPageIndex(pages, routeStatus);
+    List<MaterialPage> tempPages = pages;
+    if (index != -1) {
+      //要打开的页面在栈中已存在，则将该页面和它上面的所有页面进行出栈
+      //tips 具体规则可以根据需要进行调整，这里要求栈中只允许有一个同样的页面的实例
+      tempPages = tempPages.sublist(0, index);
+    }
+    var page;
+    if (routeStatus == RouteStatus.home) {
+      //跳转首页时将栈中其它页面进行出栈，因为首页不可回退
+      pages.clear();
+      page = pagerWrap(HomePage(
         onJumpToDetail: (videoModel) {
           this.videoModel = videoModel;
           notifyListeners();
         },
-      )),
-      if (videoModel != null) pagerWrap(VideoDetailPage(videoModel!))
-    ];
-    return Navigator(
-      key: navigatorKey,
-      pages: pages,
-      onPopPage: (route, result) {
-        //在这里控制是否可以返回
-        if (!route.didPop(result)) {
-          return false;
-        }
-        return true;
-      },
-    );
+      ));
+    } else if (routeStatus == RouteStatus.detail) {
+      page = pagerWrap(VideoDetailPage(videoModel!));
+    } else if (routeStatus == RouteStatus.registration) {
+      page = pagerWrap(RegistrationPage(() {
+        _routeStatus = RouteStatus.login;
+        notifyListeners();
+      }));
+    } else if (routeStatus == RouteStatus.login) {
+      page = pagerWrap(LoginPage(
+        onJumpRegistration: () {
+          _routeStatus = RouteStatus.registration;
+          notifyListeners();
+        },
+        onSuccess: () {
+          _routeStatus = RouteStatus.home;
+          notifyListeners();
+        },
+      ));
+    }
+    //重新创建一个数组，否则pages因引用没有改变路由不会生效
+    tempPages = [...tempPages, page];
+    pages = tempPages;
+    return WillPopScope(
+        child: Navigator(
+          key: navigatorKey,
+          pages: pages,
+          onPopPage: (route, result) {
+            if (route.settings is MaterialPage) {
+              //登录页未登录返回拦截
+              if ((route.settings as MaterialPage).child is LoginPage) {
+                if (!hasLogin) {
+                  showWarnToast("请先登录");
+                  return false;
+                }
+              }
+            }
+            //执行返回操作
+            if (!route.didPop(result)) {
+              return false;
+            }
+            pages.removeLast();
+            return true;
+          },
+        ),
+        //fix Android物理返回键，无法返回上一页问题@https://github.com/flutter/flutter/issues/66349
+        onWillPop: () async => !await navigatorKey.currentState!.maybePop());
   }
 
-  @override
-  Future<void> setNewRoutePath(BiliRoutePath path) async {
-    this.path = path;
+  RouteStatus get routeStatus {
+    if (_routeStatus != RouteStatus.registration && !hasLogin) {
+      return _routeStatus = RouteStatus.login;
+    } else if (videoModel != null) {
+      return _routeStatus = RouteStatus.detail;
+    } else {
+      return _routeStatus;
+    }
   }
+
+  bool get hasLogin => LoginDao.getBoardingPass() != null;
+
+  @override
+  Future<void> setNewRoutePath(BiliRoutePath path) async {}
 }
 
 ///定义路有数据path
@@ -80,9 +150,4 @@ class BiliRoutePath {
   final String location;
   BiliRoutePath.home() : location = "/";
   BiliRoutePath.detail() : location = "/detail";
-}
-
-///创建页面
-pagerWrap(Widget child) {
-  return MaterialPage(key: ValueKey(child.hashCode), child: child);
 }
