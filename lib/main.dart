@@ -5,6 +5,7 @@ import 'package:fb_bili/http/dao/login_dao.dart';
 import 'package:fb_bili/http/request/notice_request.dart';
 import 'package:fb_bili/http/request/test_request.dart';
 import 'package:fb_bili/model/video_model.dart';
+import 'package:fb_bili/navigator/bottom_navigator.dart';
 import 'package:fb_bili/navigator/hi_navigator.dart';
 import 'package:fb_bili/page/home_page.dart';
 import 'package:fb_bili/page/login_page.dart';
@@ -85,7 +86,7 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
     if (routeStatus == RouteStatus.home) {
       //跳转首页时将栈中其它页面进行出栈，因为首页不可回退
       pages.clear();
-      page = pagerWrap(const HomePage());
+      page = pagerWrap(const BottomNavigator());
     } else if (routeStatus == RouteStatus.detail) {
       page = pagerWrap(VideoDetailPage(videoModel!));
     } else if (routeStatus == RouteStatus.registration) {
