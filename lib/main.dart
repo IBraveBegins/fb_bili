@@ -95,6 +95,8 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
     }
     //重新创建一个数组，否则pages因引用没有改变路由不会生效
     tempPages = [...tempPages, page];
+    //通知路由发生变化
+    HiNavigator.getInstance().notify(tempPages, pages);
     pages = tempPages;
     return WillPopScope(
         child: Navigator(
@@ -114,7 +116,10 @@ class BiliRouteDelegate extends RouterDelegate<BiliRoutePath>
             if (!route.didPop(result)) {
               return false;
             }
+            var tempPages = [...pages];
             pages.removeLast();
+            //通知路由发生变化
+            HiNavigator.getInstance().notify(pages, tempPages);
             return true;
           },
         ),
