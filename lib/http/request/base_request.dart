@@ -41,7 +41,7 @@ abstract class BaseRequest {
   Map<String, String> params = Map();
 
   ///添加参数
-  BaseRequest add(String k, String v) {
+  BaseRequest add(String k, Object v) {
     params[k] = v.toString();
     return this;
   }
@@ -52,7 +52,7 @@ abstract class BaseRequest {
   };
 
   ///添加header
-  BaseRequest addHeader(String k, String v) {
+  BaseRequest addHeader(String k, Object v) {
     header[k] = v.toString();
     return this;
   }
