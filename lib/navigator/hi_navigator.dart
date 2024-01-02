@@ -45,3 +45,42 @@ class RouteStatusInfo {
 
   RouteStatusInfo(this.routeStatus, this.page);
 }
+
+///监听路由页面跳转
+///感知当前页面是否压后台
+class HiNavigator extends _RouteJumpListener {
+  static HiNavigator? _instance;
+
+  RouteJumpListener? _routeJump;
+
+  HiNavigator._();
+
+  static HiNavigator getInstance() {
+    _instance ??= HiNavigator._();
+    return _instance!;
+  }
+
+  ///注册路由跳转逻辑
+  void registerRouteJump(RouteJumpListener routeJumpListener) {
+    _routeJump = routeJumpListener;
+  }
+
+  @override
+  void onJumpTo(RouteStatus routeStatus, {Map? args}) {
+    _routeJump?.onJumpTo!(routeStatus, args: args);
+  }
+}
+
+///抽象类供HiNavigator实现
+abstract class _RouteJumpListener {
+  void onJumpTo(RouteStatus routeStatus, {Map args});
+}
+
+typedef OnJumpTo = void Function(RouteStatus routeStatus, {Map? args});
+
+///定义路由跳转逻辑要实现的功能
+class RouteJumpListener {
+  final OnJumpTo? onJumpTo;
+
+  RouteJumpListener({this.onJumpTo});
+}

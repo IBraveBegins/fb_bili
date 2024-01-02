@@ -1,3 +1,4 @@
+import 'package:fb_bili/navigator/hi_navigator.dart';
 import 'package:fb_bili/util/toast.dart';
 import 'package:fb_bili/widget/appbar.dart';
 import 'package:fb_bili/widget/login_button.dart';
@@ -10,10 +11,7 @@ import '../http/dao/login_dao.dart';
 import '../util/string_util.dart';
 
 class LoginPage extends StatefulWidget {
-  final VoidCallback? onJumpRegistration;
-  final VoidCallback? onSuccess;
-
-  LoginPage({super.key, this.onJumpRegistration, this.onSuccess});
+  LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -27,7 +25,9 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar('密码登录', '注册', widget.onJumpRegistration!),
+      appBar: appBar('密码登录', '注册', () {
+        HiNavigator.getInstance().onJumpTo(RouteStatus.registration);
+      }),
       body: ListView(
         children: [
           LoginEffect(protect: protect),
@@ -85,9 +85,7 @@ class _LoginPageState extends State<LoginPage> {
       if (result['code'] == 0) {
         print('登录成功');
         showToast('登录成功');
-        if (widget.onSuccess != null) {
-          widget.onSuccess!();
-        }
+        HiNavigator.getInstance().onJumpTo(RouteStatus.home);
       } else {
         print(result['msg']);
         showWarnToast(result['msg']);
